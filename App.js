@@ -16,7 +16,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const BRANCHES = {
-  "French Village": { lat: 12.9518976, lng: 80.1730098, radius: 3000, shift: "3:30 PM - 1:30 AM" }
+  "French Village": { lat: 12.9518976, lng: 80.1730098, radius: 5000, shift: "3:30 PM - 1:30 AM" }
   "Capital Land (Taramani)": { lat: 12.9832, lng: 80.2450, radius: 300, shift: "10:30 AM - 10:30 PM" }
 };
 
