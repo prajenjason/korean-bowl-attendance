@@ -77,34 +77,45 @@ export default function AttendanceApp() {
     setEmpId(STAFF_DIRECTORY[branch][0]);
   };
 
-  const verifyLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationStatus('Geolocation not supported');
-      return;
-    }
+ const verifyLocation = () => {
+  const targetBranch = BRANCHES[selectedBranch];
 
-    setLocationStatus('Checking GPS location...');
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLat = position.coords.latitude;
-        const userLng = position.coords.longitude;
-        const targetBranch = BRANCHES[selectedBranch];
-        const distance = getDistanceFromLatLonInMeters(userLat, userLng, targetBranch.lat, targetBranch.lng);
+  // French Village branch-ku GPS check thevai illa, direct success!
+  if (selectedBranch === "French Village") {
+    setLocationStatus("Verified successfully!");
+    setIsLocationVerified(true);
+    startCamera();
+    return;
+  }
 
-        if (distance <= targetBranch.radius) {
-          setLocationStatus(`Verified! Within range (${Math.round(distance)}m).`);
-          setIsLocationVerified(true);
-          startCamera();
-        } else {
-          setLocationStatus(`Failed! Too far from shop (${Math.round(distance)}m away).`);
-          setIsLocationVerified(false);
-        }
-      },
-      () => { setLocationStatus('Unable to retrieve location.'); },
-      { enableHighAccuracy: true }
-    );
-  };
+  // Capital Land branch-kku mattum pazhaya GPS check
+  if (!navigator.geolocation) {
+    setLocationStatus('Geolocation not supported');
+    return;
+  }
 
+  setLocationStatus('Checking GPS location...');
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+      const distance = getDistanceFromLatLonInM(userLat, userLng, targetBranch.lat, targetBranch.lng);
+
+      if (distance <= targetBranch.radius) {
+        setLocationStatus(`Verified! Within range (${Math.round(distance)}m).`);
+        setIsLocationVerified(true);
+        startCamera();
+      } else {
+        setLocationStatus(`Failed! Too far from shop (${Math.round(distance)}m away).`);
+        setIsLocationVerified(false);
+      }
+    },
+    () => {
+      setLocationStatus('Unable to retrieve location.');
+    },
+    { enableHighAccuracy: true }
+  );
+};
   function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
     const R = 6371000; 
     const dLat = deg2rad(lat2 - lat1);
